@@ -1,0 +1,31 @@
+Env: local
+
+Http:
+  Port: 8088
+
+redis:
+  host: localhost
+  protocol: tcp
+  port: 6379
+  dbname: moku
+
+Mysql:
+  Host: localhost
+  Protocol: tcp
+  Port: 3306
+  DbName: moku
+  Username: moku
+  Password: moku
+  MaxIdleConn: 10
+  MaxOpenConn: 100
+  ConnMaxLifetime: 1h
+
+Auth:
+  AccessTokenTTL: 2h
+  RefreshTokenTTL: 24h
+  Secret: "NdRgUkXp2s5v8y/B?D(G+KbPeShVmYq3"
+
+Limiter:
+  Rps: 10
+  Burst: 20
+  TTL: 10m
