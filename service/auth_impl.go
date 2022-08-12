@@ -6,7 +6,6 @@ import (
 	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/repository"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 type authService struct {
@@ -15,9 +14,7 @@ type authService struct {
 }
 
 func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, error) {
-	log.Println(request)
 	user, exist := a.userRepo.FindByUsername(request.Username)
-	log.Println(user)
 
 	if !exist {
 		return &model.LoginResponse{}, errors.New("User does not exist")

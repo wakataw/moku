@@ -7,13 +7,14 @@ import (
 
 type (
 	Config struct {
-		Env string
+		Mode string
 		Mysql
 		HttpConfig `mapstructure:"Http"`
 		Cache
 		Redis
 		Auth
 		Limiter
+		DefaultAdmin
 	}
 
 	Mysql struct {
@@ -54,6 +55,12 @@ type (
 		RequestPerSecond int
 		Burst            int
 		TTL              time.Duration
+	}
+
+	DefaultAdmin struct {
+		Username string
+		Password string
+		Email    string
 	}
 )
 

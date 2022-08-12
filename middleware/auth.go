@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/wakataw/moku/pkg"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -35,19 +34,15 @@ func AuthRequiredMiddleware(tokenManager *pkg.TokenManager) gin.HandlerFunc {
 			return
 		}
 
-		roles := claims["roles"]
-		log.Println(roles)
-
 		c.Set("userId", userId)
-		c.Set("roles", roles)
+		c.Set("roles", claims["roles"])
 		c.Next()
 	}
 }
 
-func isAdmin(roles []string) bool {
-	log.Println(roles)
-	for _, v := range roles {
-		if v == "admin" {
+func isAdmin(roles any) bool {
+	for _, v := range roles.([]interface{}) {
+		if v.(string) == "admin" {
 			return true
 		}
 	}
@@ -57,11 +52,13 @@ func isAdmin(roles []string) bool {
 
 func AdminRequiredMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		roles, _ := c.Get("roles")
+		roles, exists := c.Get("roles")
 
-		if !isAdmin(roles) {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
+		if exists {
+			if !isAdmin(roles) {
+				c.AbortWithStatus(http.StatusUnauthorized)
+				return
+			}
 		}
 
 		c.Next()

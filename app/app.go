@@ -6,6 +6,7 @@ import (
 	"github.com/wakataw/moku/controller"
 	"github.com/wakataw/moku/entity"
 	"github.com/wakataw/moku/middleware"
+	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/repository"
 	"github.com/wakataw/moku/service"
@@ -16,6 +17,23 @@ import (
 
 func migrate(db *gorm.DB) error {
 	err := db.AutoMigrate(&entity.User{}, &entity.Role{}, &entity.Permission{})
+
+	return err
+}
+
+func createAdmin(userService service.UserService, adminCfg *config.DefaultAdmin) error {
+	userRequest := &model.CreateUserRequest{
+		Username: adminCfg.Username,
+		Password: adminCfg.Password,
+		Email:    adminCfg.Email,
+		IDNumber: "0",
+		FullName: "Administrator User",
+		Position: "-",
+		Section:  "-",
+		Division: "-",
+		Office:   "-",
+	}
+	err := userService.CreateAdmin(userRequest)
 
 	return err
 }
@@ -44,9 +62,8 @@ func Run(configDir string) {
 	}
 
 	/*
-		initiate token manager
+		initiate JWT token manager
 	*/
-
 	tokenManager := pkg.TokenManager{
 		Secret:     cfg.Auth.Secret,
 		AccessTTL:  cfg.Auth.AccessTokenTTL,
@@ -60,6 +77,12 @@ func Run(configDir string) {
 	userService := service.NewUserService(&userRepository)
 	userController := controller.NewUserController(&userService)
 
+	// generate admin
+	err = createAdmin(userService, &cfg.DefaultAdmin)
+
+	if err != nil {
+		log.Println(err.Error())
+	}
 	/*
 		auth object
 	*/
@@ -69,6 +92,9 @@ func Run(configDir string) {
 	/*
 		Gin Server
 	*/
+
+	gin.SetMode(cfg.Mode)
+
 	r := gin.Default()
 
 	// index
@@ -79,19 +105,21 @@ func Run(configDir string) {
 	})
 
 	/*
-		auth router
+		V1 router
 	*/
-	auth := r.Group("/auth")
-	authController.Route(auth)
-
-	/*
-		api router
-	*/
-	api := r.Group("/api")
-	api.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
+	v1 := r.Group("/v1")
 	{
-		userController.Route(api)
-	}
 
+		auth := v1.Group("/")
+		{
+			authController.Route(auth)
+		}
+
+		api := v1.Group("/")
+		api.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
+		{
+			userController.Route(api)
+		}
+	}
 	r.Run(":8088")
 }

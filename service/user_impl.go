@@ -5,15 +5,13 @@ import (
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/repository"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 type userService struct {
 	Respository repository.UserRepository
 }
 
-func (u userService) Create(request model.CreateUserRequest) (response model.CreateUserResponse, err error) {
-	log.Println(request)
+func (u *userService) Create(request model.CreateUserRequest) (response model.CreateUserResponse, err error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 
 	if err != nil {
@@ -55,7 +53,7 @@ func (u userService) Create(request model.CreateUserRequest) (response model.Cre
 
 }
 
-func (u userService) GetById(userId int) (response model.GetUserResponse, exists bool) {
+func (u *userService) GetById(userId int) (response model.GetUserResponse, exists bool) {
 	user := u.Respository.FindById(userId)
 
 	response = model.GetUserResponse{
@@ -70,6 +68,13 @@ func (u userService) GetById(userId int) (response model.GetUserResponse, exists
 		Office:   user.Office,
 	}
 	return response, user.Model != nil
+}
+
+func (u *userService) CreateAdmin(request *model.CreateUserRequest) (err error) {
+	request.FullName = "Administrator User"
+	_, err = u.Create(*request)
+
+	return
 }
 
 func NewUserService(userRepository *repository.UserRepository) UserService {

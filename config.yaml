@@ -1,4 +1,5 @@
-Env: local
+# Gin Mode: release, debug, test
+Mode: debug
 
 Http:
   Port: 8088
@@ -29,3 +30,8 @@ Limiter:
   Rps: 10
   Burst: 20
   TTL: 10m
+
+DefaultAdmin:
+  Username: admin
+  Password: admin
+  Email: admin@example.com
