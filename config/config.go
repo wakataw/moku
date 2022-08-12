@@ -47,6 +47,7 @@ type (
 	Auth struct {
 		AccessTokenTTL  time.Duration
 		RefreshTokenTTL time.Duration
+		Secret          string
 	}
 
 	Limiter struct {

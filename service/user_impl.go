@@ -5,6 +5,7 @@ import (
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/repository"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 type userService struct {
@@ -12,6 +13,7 @@ type userService struct {
 }
 
 func (u userService) Create(request model.CreateUserRequest) (response model.CreateUserResponse, err error) {
+	log.Println(request)
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 
 	if err != nil {

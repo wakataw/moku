@@ -4,13 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/wakataw/moku/model"
+	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/service"
 	"net/http"
 	"strconv"
 )
 
 type userController struct {
-	Service service.UserService
+	Service      service.UserService
+	TokenManager pkg.TokenManager
 }
 
 func NewUserController(userService *service.UserService) *userController {

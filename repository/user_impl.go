@@ -15,6 +15,12 @@ type userRepositoryImpl struct {
 	DB *gorm.DB
 }
 
+func (u *userRepositoryImpl) FindByUsername(username string) (user entity.User, exists bool) {
+	result := u.DB.Where("username = ?", username).First(&user)
+
+	return user, result.RowsAffected == 1
+}
+
 func (u *userRepositoryImpl) Insert(user entity.User) error {
 	result := u.DB.Create(&user)
 

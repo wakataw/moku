@@ -5,6 +5,8 @@ import (
 	"github.com/wakataw/moku/config"
 	"github.com/wakataw/moku/controller"
 	"github.com/wakataw/moku/entity"
+	"github.com/wakataw/moku/middleware"
+	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/repository"
 	"github.com/wakataw/moku/service"
 	"gorm.io/gorm"
@@ -42,11 +44,27 @@ func Run(configDir string) {
 	}
 
 	/*
-		Generate user repo and service
+		initiate token manager
+	*/
+
+	tokenManager := pkg.TokenManager{
+		Secret:     cfg.Auth.Secret,
+		AccessTTL:  cfg.Auth.AccessTokenTTL,
+		RefreshTTL: cfg.Auth.RefreshTokenTTL,
+	}
+
+	/*
+		user repo and service
 	*/
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(&userRepository)
 	userController := controller.NewUserController(&userService)
+
+	/*
+		auth object
+	*/
+	authService := service.NewAuthService(&userRepository, &tokenManager)
+	authController := controller.NewAuthController(&authService)
 
 	/*
 		Gin Server
@@ -60,9 +78,19 @@ func Run(configDir string) {
 		})
 	})
 
-	v1 := r.Group("/v1")
+	/*
+		auth router
+	*/
+	auth := r.Group("/auth")
+	authController.Route(auth)
+
+	/*
+		api router
+	*/
+	api := r.Group("/api")
+	api.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
 	{
-		userController.Route(v1)
+		userController.Route(api)
 	}
 
 	r.Run(":8088")
