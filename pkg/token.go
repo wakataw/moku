@@ -9,7 +9,9 @@ import (
 )
 
 type MokuJWTClaims struct {
-	Roles []string `json:"roles"`
+	Roles []string `json:"rle,omitempty"`
+	Scope string   `json:"scp,omitempty"`
+	Type  string   `json:"typ,omitempty"`
 	jwt.StandardClaims
 }
 
@@ -34,6 +36,8 @@ func (m *TokenManager) GenerateToken(userId int, roles []string) (token *Token, 
 		jwt.SigningMethodHS256,
 		&MokuJWTClaims{
 			roles,
+			"user role permission",
+			"access",
 			jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(m.AccessTTL).Unix(),
 				Id:        uuid.New().String(),
@@ -55,10 +59,15 @@ func (m *TokenManager) GenerateToken(userId int, roles []string) (token *Token, 
 	*/
 	rt := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
-		&jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(m.RefreshTTL).Unix(),
-			Id:        uuid.NewString(),
-			Subject:   strconv.Itoa(userId),
+		&MokuJWTClaims{
+			[]string{},
+			"",
+			"refresh",
+			jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(m.RefreshTTL).Unix(),
+				Id:        uuid.NewString(),
+				Subject:   strconv.Itoa(userId),
+			},
 		},
 	)
 	token.RefreshToken, err = rt.SignedString([]byte(m.Secret))

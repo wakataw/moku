@@ -46,5 +46,24 @@ func (ctl *authController) Login(c *gin.Context) {
 }
 
 func (ctl *authController) RefreshToken(c *gin.Context) {
+	var request model.RefreshTokenRequest
+	err := c.BindJSON(&request)
 
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	response, err := ctl.Service.RefreshToken(request)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
 }
