@@ -30,8 +30,8 @@ func createAdmin(userService service.UserService, adminCfg *config.DefaultAdmin)
 		FullName: "Administrator User",
 		Position: "-",
 		Section:  "-",
-		Division: "-",
 		Office:   "-",
+		Title:    "-",
 	}
 	err := userService.CreateAdmin(userRequest)
 

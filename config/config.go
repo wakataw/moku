@@ -62,6 +62,17 @@ type (
 		Password string
 		Email    string
 	}
+
+	LdapAttributeMapping struct {
+		Username string
+		Email    string
+		IDNumber string
+		FullName string
+		Position string
+		Division string
+		Office   string
+		Title    string
+	}
 )
 
 func NewConfig(configDir string) (*Config, error) {

@@ -27,8 +27,8 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 		FullName:    request.FullName,
 		Position:    request.Position,
 		Section:     request.Section,
-		Division:    request.Division,
 		Office:      request.Office,
+		Title:       request.Title,
 	}
 
 	err = u.Respository.Insert(user)
@@ -45,8 +45,8 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 		FullName: user.FullName,
 		Position: user.Position,
 		Section:  user.Section,
-		Division: user.Division,
 		Office:   user.Office,
+		Title:    user.Title,
 	}
 
 	return response, nil
@@ -64,8 +64,8 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 		FullName: user.FullName,
 		Position: user.Position,
 		Section:  user.Section,
-		Division: user.Division,
 		Office:   user.Office,
+		Title:    user.Title,
 	}
 	return response, user.Model != nil
 }

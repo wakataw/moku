@@ -8,8 +8,8 @@ type CreateUserRequest struct {
 	FullName string `json:"full_name"`
 	Position string `json:"position"`
 	Section  string `json:"section"`
-	Division string `json:"division"`
 	Office   string `json:"office"`
+	Title    string `json:"title"`
 }
 
 type CreateUserResponse struct {
@@ -20,8 +20,8 @@ type CreateUserResponse struct {
 	FullName string `json:"full_name"`
 	Position string `json:"position"`
 	Section  string `json:"section"`
-	Division string `json:"division"`
 	Office   string `json:"office"`
+	Title    string `json:"title"`
 }
 
 type GetUserResponse struct {
@@ -34,4 +34,5 @@ type GetUserResponse struct {
 	Section  string `json:"section"`
 	Division string `json:"division"`
 	Office   string `json:"office"`
+	Title    string `json:"title"`
 }

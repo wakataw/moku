@@ -35,3 +35,13 @@ DefaultAdmin:
   Username: admin
   Password: admin
   Email: admin@example.com
+
+LdapAttributeMapping:
+  Username: sAMAccountName
+  Email: mail
+  IDNumber: employeeNumber
+  FullName: displayName
+  Position: description
+  Department: department
+  Office: extensionAttribute7
+  Title: title

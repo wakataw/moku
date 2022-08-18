@@ -13,8 +13,8 @@ type User struct {
 	FullName    string `gorm:"index"`
 	Position    string `gorm:"index"`
 	Section     string
-	Division    string
 	Office      string
+	Title       string
 	IsActive    bool
 	IsAdmin     bool
 	Roles       []Role `gorm:"many2many:users_roles;"`
