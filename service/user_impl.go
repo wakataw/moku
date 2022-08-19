@@ -26,27 +26,27 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 		IDNumber:    request.IDNumber,
 		FullName:    request.FullName,
 		Position:    request.Position,
-		Section:     request.Section,
+		Department:  request.Department,
 		Office:      request.Office,
 		Title:       request.Title,
 	}
 
-	err = u.Respository.Insert(user)
+	err = u.Respository.Insert(&user)
 
 	if err != nil {
 		return model.CreateUserResponse{}, err
 	}
 
 	response = model.CreateUserResponse{
-		Id:       user.ID,
-		Username: user.Username,
-		Email:    user.Email,
-		IDNumber: user.IDNumber,
-		FullName: user.FullName,
-		Position: user.Position,
-		Section:  user.Section,
-		Office:   user.Office,
-		Title:    user.Title,
+		Id:         user.ID,
+		Username:   user.Username,
+		Email:      user.Email,
+		IDNumber:   user.IDNumber,
+		FullName:   user.FullName,
+		Position:   user.Position,
+		Department: user.Department,
+		Office:     user.Office,
+		Title:      user.Title,
 	}
 
 	return response, nil
@@ -57,18 +57,18 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 	user := u.Respository.FindById(userId)
 
 	response = model.GetUserResponse{
-		Id:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		IDNumber:  user.IDNumber,
-		FullName:  user.FullName,
-		Position:  user.Position,
-		Section:   user.Section,
-		Office:    user.Office,
-		Title:     user.Title,
-		IsManager: user.IsManager,
-		IsAdmin:   user.IsAdmin,
-		IsTeacher: user.IsTeacher,
+		Id:         user.ID,
+		Username:   user.Username,
+		Email:      user.Email,
+		IDNumber:   user.IDNumber,
+		FullName:   user.FullName,
+		Position:   user.Position,
+		Department: user.Department,
+		Office:     user.Office,
+		Title:      user.Title,
+		IsManager:  user.IsManager,
+		IsAdmin:    user.IsAdmin,
+		IsTeacher:  user.IsTeacher,
 	}
 	return response, user.Model != nil
 }

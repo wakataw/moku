@@ -23,18 +23,18 @@ func migrate(db *gorm.DB) error {
 
 func createAdmin(userService service.UserService, adminCfg *config.DefaultAdmin) error {
 	userRequest := &model.CreateUserRequest{
-		Username:  adminCfg.Username,
-		Password:  adminCfg.Password,
-		Email:     adminCfg.Email,
-		IDNumber:  "0",
-		FullName:  "Administrator User",
-		Position:  "-",
-		Section:   "-",
-		Office:    "-",
-		Title:     "-",
-		IsAdmin:   true,
-		IsTeacher: true,
-		IsManager: true,
+		Username:   adminCfg.Username,
+		Password:   adminCfg.Password,
+		Email:      adminCfg.Email,
+		IDNumber:   "0",
+		FullName:   "Administrator User",
+		Position:   "-",
+		Department: "-",
+		Office:     "-",
+		Title:      "-",
+		IsAdmin:    true,
+		IsTeacher:  true,
+		IsManager:  true,
 	}
 	err := userService.CreateAdmin(userRequest)
 
@@ -89,7 +89,7 @@ func Run(configDir string) {
 	/*
 		auth object
 	*/
-	authService := service.NewAuthService(&userRepository, &tokenManager)
+	authService := service.NewAuthService(&userRepository, &tokenManager, &cfg.Ldap, &cfg.LdapAttributeMapping)
 	authController := controller.NewAuthController(&authService)
 
 	/*

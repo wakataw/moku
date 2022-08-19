@@ -15,6 +15,8 @@ type (
 		Auth
 		Limiter
 		DefaultAdmin
+		Ldap
+		LdapAttributeMapping
 	}
 
 	Mysql struct {
@@ -64,14 +66,22 @@ type (
 	}
 
 	LdapAttributeMapping struct {
-		Username string
-		Email    string
-		IDNumber string
-		FullName string
-		Position string
-		Division string
-		Office   string
-		Title    string
+		Username   string
+		Email      string
+		IDNumber   string
+		FullName   string
+		Position   string
+		Department string
+		Office     string
+		Title      string
+	}
+
+	Ldap struct {
+		Host    string
+		BindDN  string
+		BindPwd string
+		BaseDN  string
+		Network string
 	}
 )
 

@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/wakataw/moku/entity"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func NewUserRepository(db *gorm.DB) UserRepository {
@@ -21,8 +22,11 @@ func (u *userRepositoryImpl) FindByUsername(username string) (user entity.User, 
 	return user, result.RowsAffected == 1
 }
 
-func (u *userRepositoryImpl) Insert(user entity.User) error {
-	result := u.DB.Create(&user)
+func (u *userRepositoryImpl) Insert(user *entity.User) error {
+	result := u.DB.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "username"}},
+		DoUpdates: clause.AssignmentColumns([]string{"position", "department", "office", "title"}),
+	}).Create(&user)
 
 	return result.Error
 }

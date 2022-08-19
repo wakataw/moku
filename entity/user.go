@@ -12,7 +12,7 @@ type User struct {
 	IDNumber    string `gorm:"type:varchar(18);unique"`
 	FullName    string `gorm:"index"`
 	Position    string `gorm:"index"`
-	Section     string
+	Department  string
 	Office      string
 	Title       string
 	IsActive    bool
