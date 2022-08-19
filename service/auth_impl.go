@@ -103,6 +103,8 @@ func (a *authService) LdapLogin(request model.LoginRequest) (*entity.User, error
 			user.Office = v.Values[0]
 		case a.ldapMapping.Title:
 			user.Title = v.Values[0]
+		case a.ldapMapping.IDNumber:
+			user.IDNumber = v.Values[0]
 		}
 	}
 
