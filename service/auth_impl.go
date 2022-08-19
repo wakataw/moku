@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"github.com/wakataw/moku/entity"
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/repository"
@@ -15,17 +16,32 @@ type authService struct {
 	tokenManager pkg.TokenManager
 }
 
-func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, error) {
+func (a *authService) LocalLogin(request model.LoginRequest) (*entity.User, error) {
 	user, exist := a.userRepo.FindByUsername(request.Username)
 
 	if !exist {
-		return &model.LoginResponse{}, errors.New("User does not exist")
+		return &entity.User{}, errors.New("User does not exist")
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 
 	if err != nil {
-		return &model.LoginResponse{}, errors.New("wrong username or password")
+		return &entity.User{}, errors.New("wrong username or password")
+	}
+
+	return &user, nil
+}
+
+func (a *authService) LdapLogin(request model.LoginRequest) (*model.LoginResponse, error) {
+	return &model.LoginResponse{}, nil
+}
+
+func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, error) {
+	// first try local login
+	user, err := a.LocalLogin(request)
+
+	if err != nil {
+		return &model.LoginResponse{}, err
 	}
 
 	// TODO: Implement get roles from repository
