@@ -16,22 +16,25 @@ import (
 )
 
 func migrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&entity.User{}, &entity.Role{}, &entity.Permission{})
+	err := db.AutoMigrate(&entity.User{})
 
 	return err
 }
 
 func createAdmin(userService service.UserService, adminCfg *config.DefaultAdmin) error {
 	userRequest := &model.CreateUserRequest{
-		Username: adminCfg.Username,
-		Password: adminCfg.Password,
-		Email:    adminCfg.Email,
-		IDNumber: "0",
-		FullName: "Administrator User",
-		Position: "-",
-		Section:  "-",
-		Office:   "-",
-		Title:    "-",
+		Username:  adminCfg.Username,
+		Password:  adminCfg.Password,
+		Email:     adminCfg.Email,
+		IDNumber:  "0",
+		FullName:  "Administrator User",
+		Position:  "-",
+		Section:   "-",
+		Office:    "-",
+		Title:     "-",
+		IsAdmin:   true,
+		IsTeacher: true,
+		IsManager: true,
 	}
 	err := userService.CreateAdmin(userRequest)
 

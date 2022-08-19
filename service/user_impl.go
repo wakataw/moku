@@ -57,15 +57,18 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 	user := u.Respository.FindById(userId)
 
 	response = model.GetUserResponse{
-		Id:       user.ID,
-		Username: user.Username,
-		Email:    user.Email,
-		IDNumber: user.IDNumber,
-		FullName: user.FullName,
-		Position: user.Position,
-		Section:  user.Section,
-		Office:   user.Office,
-		Title:    user.Title,
+		Id:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		IDNumber:  user.IDNumber,
+		FullName:  user.FullName,
+		Position:  user.Position,
+		Section:   user.Section,
+		Office:    user.Office,
+		Title:     user.Title,
+		IsManager: user.IsManager,
+		IsAdmin:   user.IsAdmin,
+		IsTeacher: user.IsTeacher,
 	}
 	return response, user.Model != nil
 }

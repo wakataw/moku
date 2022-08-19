@@ -66,7 +66,7 @@ func (m *TokenManager) GenerateToken(userId int, roles []string) (token *Token, 
 			jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(m.RefreshTTL).Unix(),
 				Id:        uuid.NewString(),
-				Subject:   strconv.Itoa(userId),
+				Subject:   strconv.FormatUint(uint64(userId), 10),
 			},
 		},
 	)

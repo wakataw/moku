@@ -17,24 +17,6 @@ type User struct {
 	Title       string
 	IsActive    bool
 	IsAdmin     bool
-	Roles       []Role `gorm:"many2many:users_roles;"`
-}
-
-type Role struct {
-	gorm.Model
-	ID          uint          `gorm:"primaryKey;autoIncrement" json:"id"`
-	Name        string        `gorm:"type:varchar(120)"`
-	Users       []*User       `gorm:"many2many:users_roles"`
-	Permissions []*Permission `gorm:"many2many:roles_permissions"`
-}
-
-type Permission struct {
-	gorm.Model
-	ID     uint `gorm:"primaryKey;autoIncrement" json:"id"`
-	Object string
-	Create bool
-	Read   bool
-	Update bool
-	Delete bool
-	Roles  []Role `gorm:"many2many:roles_permissions"`
+	IsTeacher   bool
+	IsManager   bool
 }
