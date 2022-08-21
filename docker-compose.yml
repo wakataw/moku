@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  mariadb:
+    image: mariadb
+    container_name: moku-db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: toor
+      MARIADB_DATABASE: moku
+      MARIADB_USER: moku
+      MARIADB_PASSWORD: moku
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./volume/mariadb/:/var/lib/mysql"
+
+  redis:
+    image: redis
+    container_name: moku-redis
+    ports:
+      - "6379:6379"
+
+  ldap:
+    image: osixia/openldap
+    container_name: moku-ldap
+    environment:
+      LDAP_ORGANIZATION: "Direktorat Jenderal Pajak"
+      LDAP_DOMAIN: "intranet.pajak.go.id"
+    ports:
+      - "389:389"
+      - "636:636"
+
+  php-ldap:
+    image: osixia/phpldapadmin
+    container_name: moku-php-ldap
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: ldap
+    ports:
+      - "6443:443"
+
