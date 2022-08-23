@@ -62,13 +62,18 @@ func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, e
 	user, err := a.LocalLogin(request)
 
 	// if user is not a local user or user doesn't exist auth using ldap
-	if err == ErrNotLocalUser || err == ErrUserNotExists {
+	if errors.Is(err, ErrNotLocalUser) || err == ErrUserNotExists {
 		newUser := errors.Is(err, ErrUserNotExists)
 		err = nil
-		user, err = a.LdapLogin(request)
+		ldapUserProfile, err := a.LdapLogin(request)
+
+		if err != nil {
+			return &model.LoginResponse{}, err
+		}
 
 		// if user doesn't exist, insert new one
 		if newUser {
+			user = ldapUserProfile
 			err := a.userRepo.Insert(user)
 
 			if err != nil {
@@ -112,7 +117,7 @@ func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, e
 func (a *authService) RefreshToken(request model.RefreshTokenRequest) (*model.LoginResponse, error) {
 	var response model.LoginResponse
 
-	// vlaidate token
+	// validate token
 	token, err := a.tokenManager.Validate(request.RefreshToken)
 
 	if err != nil {
@@ -124,7 +129,7 @@ func (a *authService) RefreshToken(request model.RefreshTokenRequest) (*model.Lo
 		return &response, errors.New("provided token is not a valid refresh token")
 	}
 
-	// TODO: Implement get roles from repository
+	// get user roles
 	var roles []string
 
 	userId, err := strconv.Atoi(claims["sub"].(string))
@@ -133,12 +138,9 @@ func (a *authService) RefreshToken(request model.RefreshTokenRequest) (*model.Lo
 		return &response, err
 	}
 
-	if userId == 1 {
-		roles = []string{"admin", "student"}
-	} else {
-		roles = []string{"student"}
-	}
+	roles = a.userRepo.FindRoles(userId)
 
+	// generate new token
 	newToken, err := a.tokenManager.GenerateToken(userId, roles)
 
 	if err != nil {

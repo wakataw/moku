@@ -20,3 +20,10 @@ type User struct {
 	IsTeacher   bool
 	IsManager   bool
 }
+
+type UserRoles struct {
+	ID        int
+	IsAdmin   bool
+	IsTeacher bool
+	IsManager bool
+}

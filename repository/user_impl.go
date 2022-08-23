@@ -16,6 +16,31 @@ type userRepositoryImpl struct {
 	DB *gorm.DB
 }
 
+func (u *userRepositoryImpl) FindRoles(userId int) []string {
+	var user entity.User
+	result := u.DB.Select("is_admin", "is_manager", "is_teacher").First(&user, userId)
+
+	if result.RowsAffected != 1 {
+		return []string{}
+	}
+
+	var roles []string
+
+	if user.IsAdmin {
+		roles = append(roles, "admin")
+	}
+
+	if user.IsManager {
+		roles = append(roles, "manager")
+	}
+
+	if user.IsTeacher {
+		roles = append(roles, "teacher")
+	}
+
+	return roles
+}
+
 func (u *userRepositoryImpl) FindByUsername(username string) (user entity.User, exists bool) {
 	result := u.DB.Where("username = ?", username).First(&user)
 
