@@ -74,6 +74,13 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 }
 
 func (u *userService) CreateAdmin(request *model.CreateUserRequest) (err error) {
+
+	_, exists := u.Respository.FindByUsername("admin")
+
+	if exists {
+		return nil
+	}
+
 	request.FullName = "Administrator User"
 	_, err = u.Create(*request)
 

@@ -2,8 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
-	"github.com/go-ldap/ldap"
 	"github.com/golang-jwt/jwt"
 	"github.com/wakataw/moku/config"
 	"github.com/wakataw/moku/entity"
@@ -43,72 +41,13 @@ func (a *authService) LocalLogin(request model.LoginRequest) (*entity.User, erro
 }
 
 func (a *authService) LdapLogin(request model.LoginRequest) (*entity.User, error) {
-	conn, err := ldap.Dial(a.ldapConfig.Network, a.ldapConfig.Host)
+	ldapRepo, err := repository.NewLdapRepository(&a.ldapConfig, &a.ldapMapping)
 
 	if err != nil {
-		return &entity.User{}, ErrLdapConnection
+		return &entity.User{}, err
 	}
 
-	defer conn.Close()
-
-	err = conn.Bind(a.ldapConfig.BindDN, a.ldapConfig.BindPwd)
-
-	if err != nil {
-		return &entity.User{}, ErrLdapBind
-	}
-
-	searchRequest := ldap.SearchRequest{
-		BaseDN:       a.ldapConfig.BaseDN,
-		Scope:        ldap.ScopeWholeSubtree,
-		DerefAliases: ldap.NeverDerefAliases,
-		SizeLimit:    0,
-		TimeLimit:    0,
-		TypesOnly:    false,
-		Filter:       fmt.Sprintf("(&(objectClass=user)(samaccountname=%v))", request.Username),
-		Attributes:   []string{},
-		Controls:     nil,
-	}
-
-	result, err := conn.Search(&searchRequest)
-
-	if err != nil || len(result.Entries) != 1 {
-		return &entity.User{}, ErrLdapEmptyResult
-	}
-
-	err = conn.Bind(result.Entries[0].DN, request.Password)
-
-	if err != nil {
-		return &entity.User{}, ErrWrongUsernamePassword
-	}
-
-	user := &entity.User{
-		AccountType: "ldap",
-		Office:      "",
-		Title:       "",
-	}
-
-	for _, v := range result.Entries[0].Attributes {
-		switch v.Name {
-		case a.ldapMapping.Username:
-			user.Username = v.Values[0]
-		case a.ldapMapping.Email:
-			user.Email = v.Values[0]
-		case a.ldapMapping.FullName:
-			user.FullName = v.Values[0]
-		case a.ldapMapping.Position:
-			user.Position = v.Values[0]
-		case a.ldapMapping.Department:
-			user.Department = v.Values[0]
-		case a.ldapMapping.Office:
-			user.Office = v.Values[0]
-		case a.ldapMapping.Title:
-			user.Title = v.Values[0]
-		case a.ldapMapping.IDNumber:
-			user.IDNumber = v.Values[0]
-		}
-	}
-
-	err = a.userRepo.Insert(user)
+	user, err := ldapRepo.Authenticate(request.Username, request.Password)
 
 	if err != nil {
 		return &entity.User{}, err
@@ -122,9 +61,20 @@ func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, e
 	// first try local login
 	user, err := a.LocalLogin(request)
 
+	// if user is not a local user or user doesn't exist auth using ldap
 	if err == ErrNotLocalUser || err == ErrUserNotExists {
+		newUser := errors.Is(err, ErrUserNotExists)
 		err = nil
 		user, err = a.LdapLogin(request)
+
+		// if user doesn't exist, insert new one
+		if newUser {
+			err := a.userRepo.Insert(user)
+
+			if err != nil {
+				return &model.LoginResponse{}, err
+			}
+		}
 	}
 
 	if err != nil {
