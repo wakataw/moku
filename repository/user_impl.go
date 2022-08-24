@@ -16,6 +16,21 @@ type userRepositoryImpl struct {
 	DB *gorm.DB
 }
 
+func (u *userRepositoryImpl) Update(user *entity.User) error {
+	result := u.DB.Save(user)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (u *userRepositoryImpl) Delete(user *entity.User) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (u *userRepositoryImpl) FindRoles(userId int) []string {
 	var user entity.User
 	result := u.DB.Select("is_admin", "is_manager", "is_teacher").First(&user, userId)

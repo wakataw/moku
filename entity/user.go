@@ -19,11 +19,19 @@ type User struct {
 	IsAdmin     bool
 	IsTeacher   bool
 	IsManager   bool
+	Roles       []Role `gorm:"many2many:users_roles"`
 }
 
-type UserRoles struct {
-	ID        int
-	IsAdmin   bool
-	IsTeacher bool
-	IsManager bool
+type Role struct {
+	*gorm.Model
+	ID          int          `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name        string       `gorm:"unique;type:varchar(32)"`
+	Permissions []Permission `gorm:"many2many:roles_permissions"`
+}
+
+type Permission struct {
+	*gorm.Model
+	ID    int    `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name  string `gorm:"unique;type:varchar(100)"`
+	Roles []Role `gorm:"many2many:roles_permissions"`
 }

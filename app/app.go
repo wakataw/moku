@@ -16,7 +16,7 @@ import (
 )
 
 func migrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&entity.User{})
+	err := db.AutoMigrate(&entity.User{}, &entity.Role{}, &entity.Permission{})
 
 	return err
 }
@@ -80,6 +80,13 @@ func Run(configDir string) {
 	userService := service.NewUserService(&userRepository)
 	userController := controller.NewUserController(&userService)
 
+	/*
+		role repo and service
+	*/
+	roleRepository := repository.NewRoleRepository(db)
+	roleService := service.NewRoleService(&roleRepository)
+	roleController := controller.NewRoleController(&roleService)
+
 	// generate admin
 	err = createAdmin(userService, &cfg.DefaultAdmin)
 
@@ -122,6 +129,7 @@ func Run(configDir string) {
 		api.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
 		{
 			userController.Route(api)
+			roleController.Route(api)
 		}
 	}
 	r.Run(":8088")
