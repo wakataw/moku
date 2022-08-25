@@ -87,6 +87,13 @@ func Run(configDir string) {
 	roleService := service.NewRoleService(&roleRepository)
 	roleController := controller.NewRoleController(&roleService)
 
+	/*
+		permission repo and service
+	*/
+	permissionRepository := repository.NewPermissionRepository(db)
+	permissionService := service.NewPermissionService(&permissionRepository)
+	permissionController := controller.NewPermissionController(&permissionService)
+
 	// generate admin
 	err = createAdmin(userService, &cfg.DefaultAdmin)
 
@@ -125,11 +132,12 @@ func Run(configDir string) {
 			authController.Route(auth)
 		}
 
-		api := v1.Group("/")
-		api.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
+		adminRoute := v1.Group("/")
+		adminRoute.Use(middleware.AuthRequiredMiddleware(&tokenManager), middleware.AdminRequiredMiddleware())
 		{
-			userController.Route(api)
-			roleController.Route(api)
+			userController.Route(adminRoute)
+			roleController.Route(adminRoute)
+			permissionController.Route(adminRoute)
 		}
 	}
 	r.Run(":8088")
