@@ -19,6 +19,7 @@ func (ctl *permissionController) Route(r *gin.RouterGroup) {
 	permissions := r.Group("/permissions")
 	{
 		permissions.POST("/", ctl.Create)
+		permissions.GET("/", ctl.All)
 	}
 }
 
@@ -42,5 +43,30 @@ func (ctl *permissionController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data":    response,
+	})
+}
+
+func (ctl *permissionController) All(c *gin.Context) {
+	var request model.RequestParameter
+
+	if err := c.BindQuery(&request); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	resp, err := ctl.service.All(&request)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
+		"data":    resp,
 	})
 }

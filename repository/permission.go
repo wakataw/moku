@@ -10,4 +10,5 @@ type PermissionRepository interface {
 	FindByIds(permIds ...int) *[]entity.Permission
 	FindByName(permName string) *entity.Permission
 	FindByNames(permNames ...string) *[]entity.Permission
+	All(lastCursor int, limit int, query string, ascending bool) (permissions *[]entity.Permission, err error)
 }

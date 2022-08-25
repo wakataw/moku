@@ -119,7 +119,7 @@ func (ctl *roleController) Delete(c *gin.Context) {
 func (ctl *roleController) GetAll(c *gin.Context) {
 	var request model.RequestParameter
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.BindQuery(&request); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
