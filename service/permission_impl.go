@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"github.com/wakataw/moku/entity"
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/repository"
@@ -8,6 +10,45 @@ import (
 
 type permissionService struct {
 	repository repository.PermissionRepository
+}
+
+func (p *permissionService) Update(request *model.UpdatePermissionRequest) (response *model.GetPermissionResponse, err error) {
+	perm, err := p.repository.Update(&entity.Permission{
+		ID:   request.ID,
+		Name: request.Name,
+	})
+
+	if err != nil {
+		return &model.GetPermissionResponse{}, err
+	}
+
+	return &model.GetPermissionResponse{
+		ID:   perm.ID,
+		Name: perm.Name,
+	}, nil
+}
+
+func (p *permissionService) Delete(permId int) (err error) {
+	err = p.repository.Delete(&entity.Permission{ID: permId})
+	return
+}
+
+func (p *permissionService) GetPermissionById(permId int) *model.GetPermissionResponse {
+	panic("implement me")
+}
+
+func (p *permissionService) GetPermissionByName(permName string) (*model.GetPermissionResponse, error) {
+	perm, exists := p.repository.FindByName(permName)
+
+	if !exists {
+		return &model.GetPermissionResponse{}, errors.New(fmt.Sprintf("permission %v doesn't exist", permName))
+	}
+
+	return &model.GetPermissionResponse{
+		ID:   perm.ID,
+		Name: perm.Name,
+	}, nil
+
 }
 
 func (p *permissionService) All(request *model.RequestParameter) (responses *[]model.GetPermissionResponse, err error) {

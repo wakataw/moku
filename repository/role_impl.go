@@ -71,13 +71,7 @@ func (r roleRepository) FindByIds(roleIds ...int) (roles *[]entity.Role) {
 
 func (r roleRepository) FindByName(roleName string) (role *entity.Role, exists bool) {
 	result := r.DB.Preload("Permissions").Where("name = ?", roleName).Find(&role)
-
-	if result.RowsAffected == 0 {
-		exists = false
-	} else {
-		exists = true
-	}
-
+	exists = result.RowsAffected > 0
 	return
 }
 

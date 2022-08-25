@@ -10,7 +10,28 @@ type permissionRepository struct {
 	DB *gorm.DB
 }
 
-func (r permissionRepository) All(lastCursor int, limit int, query string, ascending bool) (permissions *[]entity.Permission, err error) {
+func (r *permissionRepository) FindById(permId int) (permission *entity.Permission) {
+	r.DB.Find(&permission, permId)
+	return
+}
+
+func (r *permissionRepository) FindByIds(permIds ...int) (permissions *[]entity.Permission) {
+	r.DB.Find(&permissions, permIds)
+	return
+}
+
+func (r *permissionRepository) FindByName(permName string) (permission *entity.Permission, exists bool) {
+	result := r.DB.Where("name = ?", permName).Find(&permission)
+	exists = result.RowsAffected > 0
+	return
+}
+
+func (r *permissionRepository) FindByNames(permNames ...string) (permissions *[]entity.Permission) {
+	r.DB.Where("name IN ?", permNames).Find(&permNames)
+	return
+}
+
+func (r *permissionRepository) All(lastCursor int, limit int, query string, ascending bool) (permissions *[]entity.Permission, err error) {
 	tx := r.DB.Where("name like ?", fmt.Sprintf("%%%v%%", query))
 
 	// pagination
@@ -41,7 +62,7 @@ func (r permissionRepository) All(lastCursor int, limit int, query string, ascen
 	return permissions, nil
 }
 
-func (r permissionRepository) Insert(perm *entity.Permission) (*entity.Permission, error) {
+func (r *permissionRepository) Insert(perm *entity.Permission) (*entity.Permission, error) {
 	result := r.DB.Where("name = ?", perm.Name).Find(&perm)
 
 	if result.Error != nil {
@@ -63,34 +84,14 @@ func (r permissionRepository) Insert(perm *entity.Permission) (*entity.Permissio
 
 }
 
-func (r permissionRepository) Update(perm *entity.Permission) error {
-	//TODO implement me
-	panic("implement me")
+func (r *permissionRepository) Update(perm *entity.Permission) (*entity.Permission, error) {
+	result := r.DB.Select("name").Save(perm)
+	return perm, result.Error
 }
 
-func (r permissionRepository) Delete(perm *entity.Permission) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r permissionRepository) FindById(permId int) *entity.Permission {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r permissionRepository) FindByIds(permIds ...int) *[]entity.Permission {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r permissionRepository) FindByName(permName string) *entity.Permission {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r permissionRepository) FindByNames(permNames ...string) *[]entity.Permission {
-	//TODO implement me
-	panic("implement me")
+func (r *permissionRepository) Delete(perm *entity.Permission) (err error) {
+	err = r.DB.Delete(perm).Error
+	return
 }
 
 func NewPermissionRepository(db *gorm.DB) PermissionRepository {
