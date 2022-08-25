@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/wakataw/moku/entity"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,6 +15,37 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 type userRepositoryImpl struct {
 	DB *gorm.DB
+}
+
+func (u *userRepositoryImpl) All(lastCursor int, limit int, query string, ascending bool) (users *[]entity.User, err error) {
+	tx := u.DB.Where("full_name like ?", fmt.Sprintf("%%%v%%", query))
+
+	// pagination
+	if lastCursor > 0 {
+		if ascending {
+			tx.Where("id > ?", lastCursor)
+		} else {
+			tx.Where("id < ?", lastCursor)
+		}
+	}
+
+	// order
+	if ascending {
+		tx.Order("id asc")
+	} else {
+		tx.Order("id desc")
+	}
+
+	// add limit
+	tx.Limit(limit)
+
+	err = tx.Find(&users).Error
+
+	if err != nil {
+		return &[]entity.User{}, err
+	}
+
+	return users, nil
 }
 
 func (u *userRepositoryImpl) Update(user *entity.User) error {

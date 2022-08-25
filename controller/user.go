@@ -11,13 +11,13 @@ import (
 )
 
 type userController struct {
-	Service      service.UserService
+	service      service.UserService
 	TokenManager pkg.TokenManager
 }
 
 func NewUserController(userService *service.UserService) *userController {
 	return &userController{
-		Service: *userService,
+		service: *userService,
 	}
 }
 
@@ -26,6 +26,7 @@ func (ctl *userController) Route(r *gin.RouterGroup) {
 	{
 		users.POST("/", ctl.Create)
 		users.GET("/:id", ctl.GetById)
+		users.GET("/", ctl.All)
 	}
 }
 
@@ -41,7 +42,7 @@ func (ctl *userController) Create(c *gin.Context) {
 		return
 	}
 
-	response, err := ctl.Service.Create(request)
+	response, err := ctl.service.Create(request)
 
 	if err != nil {
 		mysqlErr := err.(*mysql.MySQLError)
@@ -78,7 +79,7 @@ func (ctl *userController) GetById(c *gin.Context) {
 		return
 	}
 
-	user, exists := ctl.Service.GetById(userId)
+	user, exists := ctl.service.GetById(userId)
 
 	if !exists {
 		statusCode = http.StatusNotFound
@@ -90,4 +91,28 @@ func (ctl *userController) GetById(c *gin.Context) {
 		"data": user,
 	})
 
+}
+
+func (ctl *userController) All(c *gin.Context) {
+	var request model.RequestParameter
+
+	if err := c.BindQuery(&request); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	response, err := ctl.service.All(&request)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": response,
+	})
 }

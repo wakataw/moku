@@ -8,7 +8,41 @@ import (
 )
 
 type userService struct {
-	Respository repository.UserRepository
+	repository repository.UserRepository
+}
+
+func (u *userService) All(request *model.RequestParameter) (responses *[]model.GetUserResponse, err error) {
+	results, err := u.repository.All(
+		*request.LastCursor,
+		request.Limit,
+		request.Query,
+		request.Ascending,
+	)
+
+	if err != nil {
+		return &[]model.GetUserResponse{}, err
+	}
+
+	var usersResp []model.GetUserResponse
+
+	for _, v := range *results {
+		usersResp = append(usersResp, model.GetUserResponse{
+			Id:         v.ID,
+			Username:   v.Username,
+			Email:      v.Email,
+			IDNumber:   v.IDNumber,
+			FullName:   v.FullName,
+			Position:   v.Position,
+			Department: v.Department,
+			Office:     v.Office,
+			Title:      v.Title,
+			IsAdmin:    v.IsAdmin,
+			IsTeacher:  v.IsTeacher,
+			IsManager:  v.IsManager,
+		})
+	}
+
+	return &usersResp, nil
 }
 
 func (u *userService) Create(request model.CreateUserRequest) (response model.CreateUserResponse, err error) {
@@ -31,7 +65,7 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 		Title:       request.Title,
 	}
 
-	err = u.Respository.Insert(&user)
+	err = u.repository.Insert(&user)
 
 	if err != nil {
 		return model.CreateUserResponse{}, err
@@ -54,7 +88,7 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 }
 
 func (u *userService) GetById(userId int) (response model.GetUserResponse, exists bool) {
-	user := u.Respository.FindById(userId)
+	user := u.repository.FindById(userId)
 
 	response = model.GetUserResponse{
 		Id:         user.ID,
@@ -75,7 +109,7 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 
 func (u *userService) CreateAdmin(request *model.CreateUserRequest) (err error) {
 
-	_, exists := u.Respository.FindByUsername("admin")
+	_, exists := u.repository.FindByUsername("admin")
 
 	if exists {
 		return nil
@@ -89,6 +123,6 @@ func (u *userService) CreateAdmin(request *model.CreateUserRequest) (err error) 
 
 func NewUserService(userRepository *repository.UserRepository) UserService {
 	return &userService{
-		Respository: *userRepository,
+		repository: *userRepository,
 	}
 }
