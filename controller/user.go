@@ -27,6 +27,7 @@ func (ctl *userController) Route(r *gin.RouterGroup) {
 		users.GET("/:id", ctl.GetById)
 		users.GET("/", ctl.All)
 		users.DELETE("/:id", ctl.Delete)
+		users.POST("/:id/roles", ctl.SetRoles)
 	}
 }
 
@@ -119,6 +120,30 @@ func (ctl *userController) Delete(c *gin.Context) {
 	}
 
 	err = ctl.service.Delete(userId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
+	})
+}
+
+func (ctl *userController) SetRoles(c *gin.Context) {
+	var requests model.SetUserRoleRequest
+
+	if err := c.BindJSON(&requests); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err := ctl.service.SetRole(&requests)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{

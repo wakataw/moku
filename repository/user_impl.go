@@ -17,6 +17,12 @@ type userRepositoryImpl struct {
 	DB *gorm.DB
 }
 
+func (u *userRepositoryImpl) SetRoles(user *entity.User, roles ...*entity.Role) (*entity.User, error) {
+	err := u.DB.Model(&user).Association("Roles").Replace(roles)
+
+	return user, err
+}
+
 func (u *userRepositoryImpl) All(lastCursor int, limit int, query string, ascending bool) (users *[]entity.User, err error) {
 	tx := u.DB.Where("full_name like ?", fmt.Sprintf("%%%v%%", query))
 

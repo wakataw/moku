@@ -11,6 +11,18 @@ type userService struct {
 	repository repository.UserRepository
 }
 
+func (u *userService) SetRole(request *model.SetUserRoleRequest) error {
+	var roles []*entity.Role
+
+	for _, v := range request.Roles {
+		roles = append(roles, &entity.Role{ID: v.ID, Name: v.Name})
+	}
+
+	_, err := u.repository.SetRoles(&entity.User{ID: request.UserId}, roles...)
+
+	return err
+}
+
 func (u *userService) All(request *model.RequestParameter) (responses *[]model.GetUserResponse, err error) {
 	results, err := u.repository.All(
 		*request.LastCursor,

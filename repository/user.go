@@ -7,6 +7,7 @@ type UserRepository interface {
 	Insert(user *entity.User) (*entity.User, error)
 	Update(user *entity.User) error
 	Delete(user *entity.User) error
+	SetRoles(user *entity.User, roles ...*entity.Role) (*entity.User, error)
 	FindById(userId int) entity.User
 	FindByUsername(username string) (entity.User, bool)
 	FindRoles(userId int) []string

@@ -8,4 +8,5 @@ type UserService interface {
 	CreateAdmin(request *model.CreateUserRequest) error
 	Delete(userId int) error
 	All(request *model.RequestParameter) (responses *[]model.GetUserResponse, err error)
+	SetRole(request *model.SetUserRoleRequest) error
 }
