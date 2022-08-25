@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/pkg"
 	"github.com/wakataw/moku/service"
@@ -27,6 +26,7 @@ func (ctl *userController) Route(r *gin.RouterGroup) {
 		users.POST("/", ctl.Create)
 		users.GET("/:id", ctl.GetById)
 		users.GET("/", ctl.All)
+		users.DELETE("/:id", ctl.Delete)
 	}
 }
 
@@ -45,18 +45,9 @@ func (ctl *userController) Create(c *gin.Context) {
 	response, err := ctl.service.Create(request)
 
 	if err != nil {
-		mysqlErr := err.(*mysql.MySQLError)
-
-		switch mysqlErr.Number {
-		case 1062:
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "Combination of username/email/ID Number already exists",
-			})
-		default:
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": "General database error",
-			})
-		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
 
 		return
 	}
@@ -114,5 +105,29 @@ func (ctl *userController) All(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": response,
+	})
+}
+
+func (ctl *userController) Delete(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err = ctl.service.Delete(userId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
 	})
 }

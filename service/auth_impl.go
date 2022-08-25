@@ -74,7 +74,15 @@ func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, e
 		// if user doesn't exist, insert new one
 		if newUser {
 			user = ldapUserProfile
-			err := a.userRepo.Insert(user)
+			_, err := a.userRepo.Insert(user)
+
+			if err != nil {
+				return &model.LoginResponse{}, err
+			}
+		} else {
+			// update profile if exsits
+			ldapUserProfile.ID = user.ID
+			err := a.userRepo.Update(ldapUserProfile)
 
 			if err != nil {
 				return &model.LoginResponse{}, err

@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github.com/wakataw/moku/entity"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func NewUserRepository(db *gorm.DB) UserRepository {
@@ -49,7 +49,7 @@ func (u *userRepositoryImpl) All(lastCursor int, limit int, query string, ascend
 }
 
 func (u *userRepositoryImpl) Update(user *entity.User) error {
-	result := u.DB.Save(user)
+	result := u.DB.Omit("users.created_at").Save(user)
 
 	if result.Error != nil {
 		return result.Error
@@ -59,8 +59,10 @@ func (u *userRepositoryImpl) Update(user *entity.User) error {
 }
 
 func (u *userRepositoryImpl) Delete(user *entity.User) error {
-	//TODO implement me
-	panic("implement me")
+	// hard delete user since username is unique
+	err := u.DB.Unscoped().Delete(&user).Error
+
+	return err
 }
 
 func (u *userRepositoryImpl) FindRoles(userId int) []string {
@@ -94,13 +96,16 @@ func (u *userRepositoryImpl) FindByUsername(username string) (user entity.User, 
 	return user, result.RowsAffected == 1
 }
 
-func (u *userRepositoryImpl) Insert(user *entity.User) error {
-	result := u.DB.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "username"}},
-		DoUpdates: clause.AssignmentColumns([]string{"position", "department", "office", "title"}),
-	}).Create(&user)
+func (u *userRepositoryImpl) Insert(user *entity.User) (*entity.User, error) {
+	result := u.DB.Where("username = ?", user.Username).Find(&user)
 
-	return result.Error
+	if result.RowsAffected > 0 {
+		return user, errors.New("user already exists")
+	}
+
+	result = u.DB.Create(&user)
+
+	return user, result.Error
 }
 
 func (u *userRepositoryImpl) FindById(userId int) entity.User {

@@ -65,7 +65,7 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 		Title:       request.Title,
 	}
 
-	err = u.repository.Insert(&user)
+	_, err = u.repository.Insert(&user)
 
 	if err != nil {
 		return model.CreateUserResponse{}, err
@@ -119,6 +119,12 @@ func (u *userService) CreateAdmin(request *model.CreateUserRequest) (err error) 
 	_, err = u.Create(*request)
 
 	return
+}
+
+func (u *userService) Delete(userId int) error {
+	err := u.repository.Delete(&entity.User{ID: userId})
+
+	return err
 }
 
 func NewUserService(userRepository *repository.UserRepository) UserService {
