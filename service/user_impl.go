@@ -11,6 +11,37 @@ type userService struct {
 	repository repository.UserRepository
 }
 
+func (u *userService) Update(request *model.UpdateUserRequest) (response *model.CreateUserResponse, err error) {
+	user := entity.User{
+		ID:         request.Id,
+		Username:   request.Username,
+		Email:      request.Email,
+		IDNumber:   request.IDNumber,
+		FullName:   request.FullName,
+		Position:   request.Position,
+		Department: request.Department,
+		Office:     request.Office,
+		Title:      request.Title,
+	}
+	err = u.repository.Update(&user)
+
+	if err != nil {
+		return &model.CreateUserResponse{}, err
+	}
+
+	return &model.CreateUserResponse{
+		Id:         user.ID,
+		Username:   user.Username,
+		Email:      user.Email,
+		IDNumber:   user.IDNumber,
+		FullName:   user.FullName,
+		Position:   user.Position,
+		Department: user.Department,
+		Office:     user.Office,
+		Title:      user.Title,
+	}, nil
+}
+
 func (u *userService) SetRole(request *model.SetUserRoleRequest) error {
 	var roles []*entity.Role
 
