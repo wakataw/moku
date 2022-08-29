@@ -15,11 +15,16 @@ type User struct {
 	Department  string
 	Office      string
 	Title       string
-	IsActive    bool
-	IsAdmin     bool
-	IsTeacher   bool
-	IsManager   bool
 	Roles       []Role `gorm:"many2many:users_roles"`
+}
+
+func (u *User) IsAdmin() bool {
+	for _, v := range u.Roles {
+		if v.Name == "admin" {
+			return true
+		}
+	}
+	return false
 }
 
 type Role struct {

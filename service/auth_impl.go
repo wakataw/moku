@@ -96,16 +96,7 @@ func (a *authService) Login(request model.LoginRequest) (*model.LoginResponse, e
 	}
 
 	// construct role slice
-	var roles []string
-	if user.IsAdmin {
-		roles = append(roles, "admin")
-	}
-	if user.IsManager {
-		roles = append(roles, "manager")
-	}
-	if user.IsTeacher {
-		roles = append(roles, "teacher")
-	}
+	roles := a.userRepo.FindRoles(user.ID)
 
 	token, err := a.tokenManager.GenerateToken(user.ID, roles)
 

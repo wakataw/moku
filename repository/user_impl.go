@@ -73,7 +73,7 @@ func (u *userRepositoryImpl) Delete(user *entity.User) error {
 
 func (u *userRepositoryImpl) FindRoles(userId int) []string {
 	var user entity.User
-	result := u.DB.Select("is_admin", "is_manager", "is_teacher").First(&user, userId)
+	result := u.DB.Select("id").Preload("Roles").First(&user, userId)
 
 	if result.RowsAffected != 1 {
 		return []string{}
@@ -81,23 +81,15 @@ func (u *userRepositoryImpl) FindRoles(userId int) []string {
 
 	var roles []string
 
-	if user.IsAdmin {
-		roles = append(roles, "admin")
-	}
-
-	if user.IsManager {
-		roles = append(roles, "manager")
-	}
-
-	if user.IsTeacher {
-		roles = append(roles, "teacher")
+	for _, v := range user.Roles {
+		roles = append(roles, v.Name)
 	}
 
 	return roles
 }
 
 func (u *userRepositoryImpl) FindByUsername(username string) (user entity.User, exists bool) {
-	result := u.DB.Where("username = ?", username).First(&user)
+	result := u.DB.Where("username = ?", username).Preload("Roles").First(&user)
 
 	return user, result.RowsAffected == 1
 }
@@ -117,7 +109,7 @@ func (u *userRepositoryImpl) Insert(user *entity.User) (*entity.User, error) {
 func (u *userRepositoryImpl) FindById(userId int) entity.User {
 	var user entity.User
 
-	u.DB.First(&user, userId)
+	u.DB.Preload("Roles").First(&user, userId)
 
 	return user
 }

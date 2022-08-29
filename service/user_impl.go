@@ -48,9 +48,6 @@ func (u *userService) All(request *model.RequestParameter) (responses *[]model.G
 			Department: v.Department,
 			Office:     v.Office,
 			Title:      v.Title,
-			IsAdmin:    v.IsAdmin,
-			IsTeacher:  v.IsTeacher,
-			IsManager:  v.IsManager,
 		})
 	}
 
@@ -102,6 +99,15 @@ func (u *userService) Create(request model.CreateUserRequest) (response model.Cr
 func (u *userService) GetById(userId int) (response model.GetUserResponse, exists bool) {
 	user := u.repository.FindById(userId)
 
+	var roles []*model.GetRoleSimpleResponse
+
+	for _, v := range user.Roles {
+		roles = append(roles, &model.GetRoleSimpleResponse{
+			ID:   v.ID,
+			Name: v.Name,
+		})
+	}
+
 	response = model.GetUserResponse{
 		Id:         user.ID,
 		Username:   user.Username,
@@ -112,9 +118,7 @@ func (u *userService) GetById(userId int) (response model.GetUserResponse, exist
 		Department: user.Department,
 		Office:     user.Office,
 		Title:      user.Title,
-		IsManager:  user.IsManager,
-		IsAdmin:    user.IsAdmin,
-		IsTeacher:  user.IsTeacher,
+		Roles:      roles,
 	}
 	return response, user.Model != nil
 }
