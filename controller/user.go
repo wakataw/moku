@@ -99,7 +99,7 @@ func (ctl *userController) All(c *gin.Context) {
 	response, err := ctl.service.All(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -123,7 +123,7 @@ func (ctl *userController) Delete(c *gin.Context) {
 	err = ctl.service.Delete(userId)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -147,7 +147,7 @@ func (ctl *userController) SetRoles(c *gin.Context) {
 	err := ctl.service.SetRole(&requests)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
