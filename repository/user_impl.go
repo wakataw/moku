@@ -55,18 +55,14 @@ func (u *userRepositoryImpl) All(lastCursor int, limit int, query string, ascend
 }
 
 func (u *userRepositoryImpl) Update(user *entity.User) error {
-	var currentUser entity.User
-
-	result := u.DB.Select("id").First(&currentUser, user.ID)
-
-	if result.Error != nil || errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return result.Error
-	}
-
-	result = u.DB.Omit("users.created_at").Save(user)
+	result := u.DB.Omit("users.created_at").Where("id = ?", user.ID).Updates(user)
 
 	if result.Error != nil {
 		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrNoRowsAffected
 	}
 
 	return nil

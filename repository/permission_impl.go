@@ -85,7 +85,12 @@ func (r *permissionRepository) Insert(perm *entity.Permission) (*entity.Permissi
 }
 
 func (r *permissionRepository) Update(perm *entity.Permission) (*entity.Permission, error) {
-	result := r.DB.Select("name").Save(perm)
+	result := r.DB.Select("name").Where("id = ?", perm.ID).Updates(perm)
+
+	if result.RowsAffected == 0 {
+		return nil, ErrNoRowsAffected
+	}
+
 	return perm, result.Error
 }
 

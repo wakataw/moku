@@ -49,7 +49,12 @@ func (r roleRepository) Insert(role *entity.Role) (*entity.Role, error) {
 }
 
 func (r roleRepository) Update(role *entity.Role) (*entity.Role, error) {
-	result := r.DB.Select("name").Save(role)
+	result := r.DB.Select("name").Where("id = ?", role.ID).Updates(role)
+
+	if result.RowsAffected == 0 {
+		return nil, ErrNoRowsAffected
+	}
+
 	return role, result.Error
 }
 

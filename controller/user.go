@@ -171,7 +171,7 @@ func (ctl *userController) Update(c *gin.Context) {
 	response, err := ctl.service.Update(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 

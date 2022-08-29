@@ -38,7 +38,7 @@ func (ctl *permissionController) Create(c *gin.Context) {
 	response, err := ctl.service.Create(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -63,7 +63,7 @@ func (ctl *permissionController) All(c *gin.Context) {
 	resp, err := ctl.service.All(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -88,7 +88,7 @@ func (ctl *permissionController) Update(c *gin.Context) {
 	resp, err := ctl.service.Update(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -114,7 +114,7 @@ func (ctl *permissionController) Delete(c *gin.Context) {
 	err = ctl.service.Delete(permId)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return

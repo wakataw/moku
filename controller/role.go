@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	"github.com/wakataw/moku/model"
 	"github.com/wakataw/moku/service"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -72,18 +69,9 @@ func (ctl *roleController) Update(c *gin.Context) {
 	response, err := ctl.service.Update(&request)
 
 	if err != nil {
-		mysqlErr := err.(*mysql.MySQLError)
-		switch mysqlErr.Number {
-		case 1062:
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"message": fmt.Sprintf("role with name `%v` already exists", request.Name),
-			})
-		default:
-			log.Println(err.Error())
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-				"message": "general server error",
-			})
-		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
 
 		return
 	}
@@ -106,7 +94,7 @@ func (ctl *roleController) Delete(c *gin.Context) {
 	err = ctl.service.Delete(id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 	}
@@ -129,7 +117,7 @@ func (ctl *roleController) GetAll(c *gin.Context) {
 	response, err := ctl.service.All(&request)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
