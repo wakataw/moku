@@ -69,8 +69,8 @@ type Submission struct {
 	Attempt    Attempt
 	QuestionID int `json:"question_id"`
 	Question   Question
-	AnswerID   int `json:"answer_id"`
-	Answer     QuestionMultipleChoices
-	AnswerText string `gorm:"type:text" json:"answer_text"`
-	Status     bool   `json:"status"`
+	AnswerID   int                     `json:"answer_id"`
+	Answer     QuestionMultipleChoices `gorm:"foreignKey:AnswerID"`
+	AnswerText string                  `gorm:"type:text" json:"answer_text"`
+	Status     bool                    `json:"status"`
 }
