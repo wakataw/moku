@@ -6,7 +6,7 @@ import (
 )
 
 type Program struct {
-	*gorm.Model
+	gorm.Model
 	ID          int       `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name        string    `gorm:"type:varchar(255);index" json:"name"`
 	Description string    `gorm:"type:text" json:"description"`

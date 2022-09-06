@@ -3,7 +3,7 @@ package entity
 import "gorm.io/gorm"
 
 type User struct {
-	*gorm.Model
+	gorm.Model
 	ID          int    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Username    string `gorm:"type:varchar(32);index;unique"`
 	Password    string `gorm:"type:varchar(255)"`
@@ -28,14 +28,14 @@ func (u *User) IsAdmin() bool {
 }
 
 type Role struct {
-	*gorm.Model
+	gorm.Model
 	ID          int          `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name        string       `gorm:"unique;type:varchar(32)"`
 	Permissions []Permission `gorm:"many2many:roles_permissions"`
 }
 
 type Permission struct {
-	*gorm.Model
+	gorm.Model
 	ID    int    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name  string `gorm:"unique;type:varchar(100)"`
 	Roles []Role `gorm:"many2many:roles_permissions"`
