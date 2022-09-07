@@ -6,7 +6,7 @@ import (
 )
 
 type Quiz struct {
-	gorm.Model
+	*gorm.Model
 	ID             int           `gorm:"primaryKey;autoIncrement"`
 	Name           string        `gorm:"varchar(100);index" json:"name"`
 	Description    string        `gorm:"text" json:"description"`
@@ -23,7 +23,7 @@ type Quiz struct {
 }
 
 type QuestionPackage struct {
-	gorm.Model
+	*gorm.Model
 	ID     int    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name   string `gorm:"type:varchar(100)" json:"name"`
 	QuizID int    `json:"quiz_id"`
@@ -31,7 +31,7 @@ type QuestionPackage struct {
 }
 
 type Question struct {
-	gorm.Model
+	*gorm.Model
 	ID           int `gorm:"primaryKey;autoIncrement" json:"id"`
 	Level        int `json:"level"`
 	CompetencyID int `json:"competency_id"`
@@ -42,7 +42,7 @@ type Question struct {
 }
 
 type QuestionMultipleChoices struct {
-	gorm.Model
+	*gorm.Model
 	ID         int    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Choice     string `gorm:"type:text" json:"choice"`
 	Score      int    `json:"score"`
@@ -51,12 +51,14 @@ type QuestionMultipleChoices struct {
 }
 
 type Attempt struct {
+	*gorm.Model
 	ID     int `gorm:"primaryKey;autoIncrement" json:"id"`
 	User   User
 	UserID int `json:"user_id"`
 }
 
 type Grade struct {
+	*gorm.Model
 	ID        int `gorm:"primaryKey;autoIncrement" json:"id"`
 	AttemptID int `json:"attempt_id"`
 	Attempt   Attempt
@@ -64,6 +66,7 @@ type Grade struct {
 }
 
 type Submission struct {
+	*gorm.Model
 	ID         int `gorm:"primaryKey;autoIncrement" json:"id"`
 	AttemptID  int `json:"attempt_id"`
 	Attempt    Attempt

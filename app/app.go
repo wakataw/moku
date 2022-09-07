@@ -16,7 +16,11 @@ import (
 )
 
 func migrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&entity.User{}, &entity.Role{}, &entity.Permission{})
+	err := db.AutoMigrate(
+		&entity.User{}, &entity.Role{}, &entity.Permission{}, &entity.QuestionMultipleChoices{}, &entity.Question{},
+		&entity.Quiz{}, &entity.Attempt{}, &entity.Competency{}, &entity.Program{}, &entity.Enrollment{},
+		&entity.Grade{}, &entity.QuestionPackage{}, &entity.Submission{},
+	)
 
 	return err
 }
