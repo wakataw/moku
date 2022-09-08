@@ -129,6 +129,13 @@ func Run(configDir string) {
 	permissionService := service.NewPermissionService(&permissionRepository)
 	permissionController := controller.NewPermissionController(&permissionService)
 
+	/*
+		program repo and service
+	*/
+	programRepository := repository.NewProgramRepository(db)
+	programService := service.NewProgramService(&programRepository)
+	programController := controller.NewProgramController(&programService)
+
 	// generate admin
 	err = createAdmin(userService, roleService, &cfg.DefaultAdmin)
 	err = createRoles(roleService)
@@ -174,6 +181,7 @@ func Run(configDir string) {
 			userController.Route(adminRoute)
 			roleController.Route(adminRoute)
 			permissionController.Route(adminRoute)
+			programController.Route(adminRoute)
 		}
 	}
 	r.Run(":8088")

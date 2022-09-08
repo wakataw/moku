@@ -9,4 +9,5 @@ var (
 	ErrLdapEmptyResult       = errors.New("user is not found in active directory")
 	ErrWrongUsernamePassword = errors.New("wrong username/password")
 	ErrUserNotExists         = errors.New("user not exists")
+	ErrObjectDoesntExists    = errors.New("object doesnt exists")
 )

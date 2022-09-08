@@ -8,7 +8,7 @@ type User struct {
 	Username    string `gorm:"type:varchar(32);index;unique"`
 	Password    string `gorm:"type:varchar(255)"`
 	AccountType string `gorm:"type:varchar(16);default:'local'"`
-	Email       string `gorm:";index;unique"`
+	Email       string `gorm:"index;unique"`
 	IDNumber    string `gorm:"type:varchar(18);unique"`
 	FullName    string `gorm:"index"`
 	Position    string `gorm:"index"`

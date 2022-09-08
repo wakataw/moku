@@ -49,6 +49,12 @@ type GetUserResponse struct {
 	Roles      []*GetRoleSimpleResponse `json:"roles"`
 }
 
+type GetUserResponseSimple struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	FullName string `json:"full_name"`
+}
+
 type SetUserRoleRequest struct {
 	UserId int                     `json:"user_id"`
 	Roles  []GetRoleSimpleResponse `json:"roles"`
