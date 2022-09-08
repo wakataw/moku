@@ -33,6 +33,7 @@ func (ctl *programController) Create(c *gin.Context) {
 
 	userId := c.GetInt("userId")
 	request.CreatedBy = userId
+	request.UpdatedBy = userId
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -156,6 +157,9 @@ func (ctl *programController) Delete(c *gin.Context) {
 
 func (ctl *programController) Update(c *gin.Context) {
 	var request model.UpdateProgramRequest
+
+	userId := c.GetInt("userId")
+	request.UpdatedBy = userId
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

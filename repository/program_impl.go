@@ -26,7 +26,7 @@ func (r *programRepository) Delete(program *entity.Program) (err error) {
 }
 
 func (r *programRepository) FindById(programId int) (program *entity.Program, exists bool) {
-	result := r.DB.Find(&program, programId)
+	result := r.DB.Preload("UpdatedUser").Preload("CreatedUser").Find(&program, programId)
 
 	if result.RowsAffected == 0 {
 		return program, false
@@ -57,7 +57,7 @@ func (r *programRepository) All(lastCursor int, limit int, query string, ascendi
 	// add limit
 	tx.Limit(limit)
 
-	err = tx.Find(&programs).Error
+	err = tx.Preload("CreatedUser").Preload("UpdatedUser").Find(&programs).Error
 
 	if err != nil {
 		return &[]entity.Program{}, err
@@ -67,7 +67,7 @@ func (r *programRepository) All(lastCursor int, limit int, query string, ascendi
 }
 
 func (r *programRepository) Insert(program *entity.Program) (err error) {
-	err = r.DB.Create(program).Error
+	err = r.DB.Preload("CreatedUser", "UpdatedUser").Create(program).Error
 
 	return
 }

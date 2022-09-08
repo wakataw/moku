@@ -15,7 +15,8 @@ type Program struct {
 	End         *time.Time `json:"end"`
 	Show        bool       `json:"show"`
 	Public      bool       `json:"public"`
-	CreatedBy   int        `json:"created_by" gorm:"<-:create"`
-	UpdatedBy   int        `json:"updated_by"`
-	DeletedBy   int        `json:"deleted_by"`
+	CreatedBy   *int       `json:"created_by" gorm:"<-:create"`
+	CreatedUser User       `gorm:"foreignKey:CreatedBy"`
+	UpdatedBy   *int       `json:"updated_by"`
+	UpdatedUser User       `gorm:"foreignKey:UpdatedBy"`
 }

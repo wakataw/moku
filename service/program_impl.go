@@ -22,6 +22,7 @@ func (p programService) Update(request *model.UpdateProgramRequest) (response *m
 	program.End = request.End
 	program.Public = request.Public
 	program.Show = request.Show
+	program.UpdatedBy = &request.UpdatedBy
 
 	err = p.repository.Update(&program)
 
@@ -37,7 +38,8 @@ func (p programService) Update(request *model.UpdateProgramRequest) (response *m
 		End:         program.End,
 		Show:        program.Show,
 		Public:      program.Public,
-		CreatedBy:   program.CreatedBy,
+		CreatedUser: nil,
+		UpdatedUser: nil,
 	}, nil
 
 }
@@ -62,7 +64,16 @@ func (p programService) GetProgramById(programId int) (response *model.GetProgra
 		End:         program.End,
 		Show:        program.Show,
 		Public:      program.Public,
-		CreatedBy:   program.CreatedBy,
+		CreatedUser: &model.GetUserResponseSimple{
+			ID:       program.CreatedUser.ID,
+			Username: program.CreatedUser.Username,
+			FullName: program.CreatedUser.FullName,
+		},
+		UpdatedUser: &model.GetUserResponseSimple{
+			ID:       program.UpdatedUser.ID,
+			Username: program.UpdatedUser.Username,
+			FullName: program.UpdatedUser.FullName,
+		},
 	}, nil
 
 }
@@ -77,7 +88,7 @@ func (p programService) Create(request *model.CreateProgramRequest) (response *m
 	program.End = request.End
 	program.Show = request.Show
 	program.Public = request.Public
-	program.CreatedBy = request.CreatedBy
+	program.CreatedBy = &request.CreatedBy
 
 	err = p.repository.Insert(&program)
 
@@ -93,7 +104,6 @@ func (p programService) Create(request *model.CreateProgramRequest) (response *m
 		End:         program.End,
 		Show:        program.Show,
 		Public:      program.Public,
-		CreatedBy:   program.CreatedBy,
 	}, nil
 
 }
@@ -116,7 +126,16 @@ func (p programService) All(request *model.RequestParameter) (responses *[]model
 			End:         v.End,
 			Show:        v.Show,
 			Public:      v.Public,
-			CreatedBy:   v.CreatedBy,
+			CreatedUser: &model.GetUserResponseSimple{
+				ID:       v.CreatedUser.ID,
+				Username: v.CreatedUser.Username,
+				FullName: v.CreatedUser.FullName,
+			},
+			UpdatedUser: &model.GetUserResponseSimple{
+				ID:       v.UpdatedUser.ID,
+				Username: v.UpdatedUser.Username,
+				FullName: v.UpdatedUser.FullName,
+			},
 		})
 	}
 

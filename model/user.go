@@ -50,9 +50,9 @@ type GetUserResponse struct {
 }
 
 type GetUserResponseSimple struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	FullName string `json:"full_name"`
+	ID       int    `json:"id,omitempty"`
+	Username string `json:"username,omitempty"`
+	FullName string `json:"full_name,omitempty"`
 }
 
 type SetUserRoleRequest struct {
