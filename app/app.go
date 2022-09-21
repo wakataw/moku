@@ -137,8 +137,8 @@ func Run(configDir string) {
 	programController := controller.NewProgramController(&programService)
 
 	// generate admin
-	err = createAdmin(userService, roleService, &cfg.DefaultAdmin)
 	err = createRoles(roleService)
+	err = createAdmin(userService, roleService, &cfg.DefaultAdmin)
 
 	if err != nil {
 		log.Println(err.Error())

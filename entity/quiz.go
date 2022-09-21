@@ -11,8 +11,8 @@ type Quiz struct {
 	Name           string        `gorm:"varchar(100);index" json:"name"`
 	Description    string        `gorm:"text" json:"description"`
 	Slug           string        `gorm:"varchar(128);unique;index" json:"slug"`
-	Start          time.Time     `json:"start"`
-	End            time.Time     `json:"end"`
+	Start          *int          `json:"start"`
+	End            *int          `json:"end"`
 	Duration       time.Duration `json:"duration"`
 	TotalQuestions int           `json:"total_questions"`
 	MaxAttempts    int           `json:"max_attempts"`
